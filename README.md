@@ -21,7 +21,7 @@ Ebay Item Scraper is a Python project for scraping item details from eBay listin
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/ebay-item-scraper.git
+    git clone https://github.com/igor20192/ebay-item-scraper.git
     cd ebay-item-scraper
     ```
 
