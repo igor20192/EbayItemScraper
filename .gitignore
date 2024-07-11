@@ -1,2 +1,4 @@
 env
 ebay_scraper.log
+__pycache__
+ebayscraper.json
