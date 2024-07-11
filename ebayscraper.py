@@ -36,20 +36,44 @@ class EbayScraper:
             self.data["title"] = soup.find(
                 "h1", class_="x-item-title__mainTitle"
             ).get_text(strip=True)
-            self.data["photo_url"] = soup.find("img", id="icImg")["src"]
+
+            img_tag = soup.find(
+                "div", class_="ux-image-carousel-item image-treatment active image"
+            ).find("img")
+            self.data["photo_url"] = img_tag["src"] if img_tag else "N/A"
+
             self.data["item_url"] = self.url
-            self.data["price"] = soup.find("span", class_="x-price-primary").get_text(
-                strip=True
-            ) + soup.find("span", class_="x-price-fraction").get_text(strip=True)
-            self.data["seller"] = soup.find("span", class_="mbg-nw").get_text(
-                strip=True
+
+            price_div = soup.find("div", class_="x-price-primary")
+            price_tag = (
+                price_div.find("span", class_="ux-textspans") if price_div else None
             )
-            self.data["shipping_price"] = soup.find("span", class_="sh-cst").get_text(
-                strip=True
+            self.data["price"] = price_tag.get_text(strip=True) if price_tag else "N/A"
+
+            seller_div = soup.find(
+                "h2", class_="d-stores-info-categories__container__info__section__title"
+            )
+            seller_tag = (
+                seller_div.find("span", class_="ux-textspans ux-textspans--BOLD")
+                if seller_div
+                else None
+            )
+            self.data["seller"] = (
+                seller_tag.get_text(strip=True) if seller_tag else "N/A"
+            )
+
+            shipping_div = soup.find("div", class_="ux-labels-values__values-content")
+            shipping_tag = (
+                shipping_div.find("span", class_="ux-textspans ux-textspans--BOLD")
+                if shipping_div
+                else None
+            )
+            self.data["shipping_price"] = (
+                shipping_tag.get_text(strip=True) if shipping_tag else "N/A"
             )
             self.logger.info("HTML parsed successfully.")
         except AttributeError as e:
-            self.logger.error(f"Error parsing the HTML: {e}")
+            self.logger.exception(f"Error parsing the HTML: {e}")
 
     def to_json(self, file_path=None):
         json_data = json.dumps(self.data, indent=4)
@@ -69,7 +93,7 @@ class EbayScraper:
         html = self.fetch_html()
         if html:
             self.parse_html(html)
-            self.to_json()
+            self.to_json(file_path="ebayscraper.json")
 
 
 # Usage example:
